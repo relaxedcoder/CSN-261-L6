@@ -148,7 +148,7 @@ struct graph
 
     void DFS(char start)
     {
-        visited[start] = true;
+        visited[start] = 1;
 	    cout<<start<<" ";
 	    node * adjhead = adjlist[start].head;
         while(adjhead != NULL)
@@ -161,9 +161,35 @@ struct graph
         }
     }
 
-    void findcycle()
-    {
+	bool doDFSforcycle(node * adjhead,char parent)
+	{
+    	if(adjhead != NULL) visited[adjhead->data] = 1;
+	    while(adjhead != NULL)
+	    {
+	        if(!visited[adjhead->data])
+	        {
+	        	if(doDFSforcycle(adjhead->next, parent)) return 1;
+	        }
+	        else if(adjhead->data != parent) return 1;
+	        adjhead = adjhead->next;
+	    }
+	    return 0;
+	}
 
+    bool findcycle()
+    { 
+	    resetvisited();
+		for(int i=0;i<150;i++) 
+        {
+        	if(adjlist[i].head != NULL)
+        	{
+        		if(!visited[adjlist[i].head->data])
+	        	{
+	        		if(doDFSforcycle(adjlist[i].head, adjlist[i].head->data)) return 1;
+				}
+			}
+		}
+	    return 0;
     }
     
     int calculatediameter()
@@ -226,16 +252,20 @@ int main()
 					cout<<endl;
                 }
                 break;
-            // case 4:
-            //     {
-            //         g.findcycle();
-            //     }
-            //     break;
-            // case 5:
-            //     {
-            //         cout<<g.calculatediameter();
-            //     }
-            //     break;
+             case 4:
+				{
+					if(g.findcycle())
+					{
+						cout<<endl<<"Yes"<<endl<<endl;
+					}
+					else cout<<endl<<"No"<<endl<<endl;
+				}
+				break;
+             case 5:
+				{
+					cout<<endl<<"Diameter: "<<g.calculatediameter()<<endl<<endl;
+				}
+				break;
             case 6:
                 {
                     choice = 0;
